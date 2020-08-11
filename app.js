@@ -16,7 +16,8 @@ mongoose.connect("mongodb://localhost:27017/yelp_camp", {
 
 const campgroundSchema = new mongoose.Schema({
     name: String,
-    image: String
+    image: String,
+    description: String
 });
 
 const Campground = mongoose.model("Campground", campgroundSchema);
@@ -30,7 +31,7 @@ app.get("/campgrounds", (req, res) => {
         if (err) {
             console.log(err);
         } else {
-            res.render("campgrounds", {campgrounds});
+            res.render("index", {campgrounds});
         }
     });
 });
@@ -38,7 +39,8 @@ app.get("/campgrounds", (req, res) => {
 app.post("/campgrounds", (req, res) => {
     const name = req.body.name;
     const image = req.body.image;
-    Campground.create({name, image}, (err, campground) => {
+    const description = req.body.description;
+    Campground.create({name, image, description}, (err, campground) => {
         if (err) {
             console.log(err);
         } else {
@@ -49,8 +51,18 @@ app.post("/campgrounds", (req, res) => {
 
 app.get("/campgrounds/new", (req, res) => {
     res.render("new");
-})
+});
+
+app.get("/campgrounds/:id", (req, res) => {
+    Campground.findById(req.params.id, (err, campground) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("show", {campground});
+        }
+    });
+});
 
 app.listen(3000, () => {
     console.log("The YelpCamp Server Has Started!");
-})
+});
