@@ -5,6 +5,8 @@ app.set("view engine", "ejs");
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
+const Campground = require("./models/campground");
+
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb://localhost:27017/yelp_camp", {
@@ -13,14 +15,6 @@ mongoose.connect("mongodb://localhost:27017/yelp_camp", {
 })
 .then(() => console.log("Connected to DB!"))
 .catch(err => console.log(err.message));
-
-const campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-
-const Campground = mongoose.model("Campground", campgroundSchema);
 
 app.get("/", (req, res) => {
     res.render("landing");
