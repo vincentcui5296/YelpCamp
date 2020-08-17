@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 app.set("view engine", "ejs");
 
+const seedDB = require("./seeds");
+seedDB();
+
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -48,7 +51,7 @@ app.get("/campgrounds/new", (req, res) => {
 });
 
 app.get("/campgrounds/:id", (req, res) => {
-    Campground.findById(req.params.id, (err, campground) => {
+    Campground.findById(req.params.id).populate("comments").exec((err, campground) => {
         if (err) {
             console.log(err);
         } else {
