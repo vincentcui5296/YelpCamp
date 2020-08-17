@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 const Campground = require("./models/campground");
+const Comment = require("./models/comment");
 
 const mongoose = require("mongoose");
 
@@ -28,7 +29,7 @@ app.get("/campgrounds", (req, res) => {
         if (err) {
             console.log(err);
         } else {
-            res.render("index", {campgrounds});
+            res.render("campgrounds/index", {campgrounds});
         }
     });
 });
@@ -47,7 +48,7 @@ app.post("/campgrounds", (req, res) => {
 });
 
 app.get("/campgrounds/new", (req, res) => {
-    res.render("new");
+    res.render("campgrounds/new");
 });
 
 app.get("/campgrounds/:id", (req, res) => {
@@ -55,10 +56,38 @@ app.get("/campgrounds/:id", (req, res) => {
         if (err) {
             console.log(err);
         } else {
-            res.render("show", {campground});
+            res.render("campgrounds/show", {campground});
         }
     });
 });
+
+app.get("/campgrounds/:id/comments/new", (req, res) => {
+    Campground.findById(req.params.id, (err, campground) => {
+        if (err) {
+            console.log(err)
+        } else {
+            res.render("comments/new", {campground});
+        }
+    });
+});
+
+app.post("/campgrounds/:id/comments", (req, res) => {
+    Campground.findById(req.params.id, (err, campground) => {
+        if (err) {
+            console.log(err);
+        } else {
+            Comment.create(req.body.comment, (err, comment) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    campground.comments.push(comment);
+                    campground.save();
+                    res.redirect(`/campgrounds/${campground._id}`)
+                }
+            })
+        }
+    });
+})
 
 app.listen(3000, () => {
     console.log("The YelpCamp Server Has Started!");
